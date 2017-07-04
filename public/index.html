@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/public/css/main.css" type="text/css" />
+    <title>HamishTime</title>
+</head>
+
+<body>
+    <h1>MicroHamish - A collection of Microservices</h1>
+    <h2>Made for FreeCodeCamp</h2>
+    <br>
+    <h3>HamishTime - A timestamp microservice</h3>
+    <p>To use, pass in either a string containing a unix timestamp or a natural date (if it can be parsed by javascript's date object, it can be parsed by this). The API will then return the unixtimestamp and natural language form of that date. If non-valid inputs are sent, it will return null for both properties.</p>
+    <p><i>To use, go to: /time/[yourtimehere]</i></p>
+
+    <h3>Who Are You? - A Request Header Parser Microservice</h3>
+    <p>It will return your IP address, language and computer operating system/type.</p>
+    <p><i>To use, go to: /whoareyou</i></p>
+
+    <h3>URL Shortener</h3>
+    <p>Pass in a url (including the http part), and you will get a redirect url in response. If you go to that url, you will be redirected to the original url. If the URL is not valid, there there will be an error instead.</p>
+    <p><i>To use, go to: /h/[complete url to create a link for]</i></p>
+
+    <h3>Ivison Image - An Image Search Abstraction Layer</h3>
+    <p>It returns a set of metadata for ten image search results. Add ?offset={page number} to paginate through the results.</p>
+    <p><i>Go to /image/latest to see the last 20 searched strings, and /image/api/[query] to search.</i></p>
+
+    <h3>File Seizer - A file size checker</h3>
+    <p>Upload your file below and this site will return a JSON response of its size in bytes.</p>
+    <form action="/file-size" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit">
+    </form>
+    <p>Made by <a href="http://hamishivison.com">Hamish Ivison</a></p>
+</body>
+
+</html>
