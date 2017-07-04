@@ -11,8 +11,7 @@ app.get('/', function(req, res) {
     res.sendFile(process.cwd() + '/public/index.html');
 });
 
-
-// Timestamp
+// HamishTime
 app.get('/time/:time', function(req, res) {
     var str = req.params["time"];
     var unix, natural, dat;
@@ -29,11 +28,10 @@ app.get('/time/:time', function(req, res) {
         unix = dat.getTime() / 1000;
         natural = naturalTime(dat);
     }
-    var json = JSON.stringify({
+    res.json({
         "unix": unix,
         "natural": natural
     });
-    res.json(json);
 });
 
 // WhoAreYou
@@ -43,12 +41,11 @@ app.get('/whoareyou', function(req, res) {
     var ip = req["headers"]['x-forwarded-for'];
     var ind1 = ag.indexOf('(');
     var ind2 = ag.indexOf(')');
-    var json = JSON.stringify({
+    res.json({
         "ipaddress": ip,
         "language": lan.substring(0, 5),
         "software": ag.substring(ind1 + 1, ind2)
     });
-    res.json(json);
 });
 
 // HamUrl
@@ -152,12 +149,10 @@ app.get('/image/latest', function(req, res) {
             console.log("Establishing new link...");
             var collection = db.collection('images');
             // find counter, get redirect, update database
-            var result = collection.find({}, {
-                    _id: 0
-                }).toArray()
-                .then(function(data) {
-                    res.json(data);
-                });
+            var result = collection.find({}, { _id: 0 }).toArray()
+            .then(function(data) {
+                res.json(data);
+            });
         }
     });
 });
@@ -213,7 +208,7 @@ function addImage(search) {
             console.log('Connection established to', url);
             console.log("Establishing new link...");
             // do some work here with the database.
-            var collection = db.collection('links');
+            var collection = db.collection('images');
             // find counter, get redirect, update database
             collection.count({}, function(error, num) { // counts up docs
                 if (num < 10) {
