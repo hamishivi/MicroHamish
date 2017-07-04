@@ -60,19 +60,18 @@ app.get('/h/:url*', function(req, res) {
         if (parseInt(param)) {
             findLink(param, res);
         } else {
-            var jason = JSON.stringify({
+            res.json({
                 "error": "There was an error, Make sure your url is full and correct"
             });
-            res.json(jason);
         }
     }
 });
 
 var MongoClient = mongodb.MongoClient;
-var url = process.env.LINK_MONGOLAB_URI;
 
 // Use connect method to connect to the Server
 function newLink(newurl, res) {
+    var url = process.env.MONGOLAB_URI;
     MongoClient.connect(url, function(err, db) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -104,17 +103,17 @@ function newLink(newurl, res) {
                     if (err) throw err;
                     db.close();
                 });
-                var jason = JSON.stringify({
+                res.json({
                     "original url": newurl,
                     "new url": process.env.NEW_URL + count
                 });
-                res.json(jason);
             });
         }
     });
 }
 
 function findLink(redirectnum, res) {
+    var url = process.env.MONGOLAB_URI;
     MongoClient.connect(url, function(err, db) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -144,14 +143,14 @@ function findLink(redirectnum, res) {
 // IvisonImage
 app.get('/image/latest', function(req, res) {
     console.log("using latest thing");
-    var url = process.env.IMAGE_MONGOLAB_URI;
+    var url = process.env.MONGOLAB_URI;
     MongoClient.connect(url, function(err, db) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
         } else {
             console.log('Connection established to', url);
             console.log("Establishing new link...");
-            var collection = db.collection('documents');
+            var collection = db.collection('images');
             // find counter, get redirect, update database
             var result = collection.find({}, {
                     _id: 0
@@ -164,7 +163,6 @@ app.get('/image/latest', function(req, res) {
 });
 
 app.get('/image/api/:search*', function(req, res) {
-    console.log("searching")
     var param = req.params["search"];
     var offset = req.query["offset"];
     if (!offset) {
@@ -207,7 +205,7 @@ function imageSearch(search, res, page) {
 
 // Use connect method to connect to the Server
 function addImage(search) {
-    var url = 'mongodb://hamishivi:isobel@ds041586.mlab.com:41586/ivisonimage';
+    var url = process.env.MONGOLAB_URI;
     MongoClient.connect(url, function(err, db) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -215,7 +213,7 @@ function addImage(search) {
             console.log('Connection established to', url);
             console.log("Establishing new link...");
             // do some work here with the database.
-            var collection = db.collection('documents');
+            var collection = db.collection('links');
             // find counter, get redirect, update database
             collection.count({}, function(error, num) { // counts up docs
                 if (num < 10) {
