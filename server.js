@@ -69,13 +69,15 @@ var MongoClient = mongodb.MongoClient;
 // Use connect method to connect to the Server
 function newLink(newurl, res) {
     var url = process.env.MONGOLAB_URI;
-    MongoClient.connect(url, function(err, db) {
+    var dbname = process.env.DBNAME
+    MongoClient.connect(url, function(err, client) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
         } else {
             console.log('Connection established to', url);
             console.log("Establishing new link...");
             // do some work here with the database.
+            var db = client.db(dbname);
             var collection = db.collection('links');
             // find counter, get redirect, update database
             collection.find({
@@ -86,11 +88,11 @@ function newLink(newurl, res) {
             }).toArray(function(err, docs) {
                 if (err) throw err;
                 var count = docs[0].num;
-                collection.insert({
+                collection.insertOne({
                     url: newurl,
                     num: count
                 });
-                collection.update({
+                collection.updateOne({
                     url: "count"
                 }, {
                     $inc: {
@@ -98,7 +100,7 @@ function newLink(newurl, res) {
                     }
                 }, function(err) {
                     if (err) throw err;
-                    db.close();
+                    client.close();
                 });
                 res.json({
                     "original url": newurl,
@@ -111,13 +113,15 @@ function newLink(newurl, res) {
 
 function findLink(redirectnum, res) {
     var url = process.env.MONGOLAB_URI;
-    MongoClient.connect(url, function(err, db) {
+    var dbname = process.env.DBNAME;
+    MongoClient.connect(url, function(err, client) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
         } else {
             console.log('Connection established to', url);
             console.log("finding link...");
             // do some work here with the database.
+            var db = client.db(dbname);
             var collection = db.collection('links');
             // find link with number
             // return url and then redirect
@@ -130,7 +134,7 @@ function findLink(redirectnum, res) {
                 if (err) throw err;
                 console.log(docs);
                 var url = docs[0].url;
-                db.close();
+                client.close();
                 res.redirect(url);
             });
         }
@@ -141,12 +145,14 @@ function findLink(redirectnum, res) {
 app.get('/image/latest', function(req, res) {
     console.log("using latest thing");
     var url = process.env.MONGOLAB_URI;
-    MongoClient.connect(url, function(err, db) {
+    var dbname = process.env.DBNAME;
+    MongoClient.connect(url, function(err, client) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
         } else {
             console.log('Connection established to', url);
             console.log("Establishing new link...");
+            var db = client.db(dbname);
             var collection = db.collection('images');
             // find counter, get redirect, update database
             var result = collection.find({}, { _id: 0 }).toArray()
@@ -201,24 +207,26 @@ function imageSearch(search, res, page) {
 // Use connect method to connect to the Server
 function addImage(search) {
     var url = process.env.MONGOLAB_URI;
-    MongoClient.connect(url, function(err, db) {
+    var dbname = process.env.DBNAME;
+    MongoClient.connect(url, function(err, client) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
         } else {
             console.log('Connection established to', url);
             console.log("Establishing new link...");
             // do some work here with the database.
+            var db = client.db(dbname);
             var collection = db.collection('images');
             // find counter, get redirect, update database
             collection.count({}, function(error, num) { // counts up docs
                 if (num < 10) {
-                    collection.insert({
+                    collection.insertOne({
                         "search": search,
                         "when": timeStamp()
                     });
                 } else {
                     collection.deleteOne({});
-                    collection.insert({
+                    collection.insertOne({
                         "search": search,
                         "when": timeStamp()
                     });
